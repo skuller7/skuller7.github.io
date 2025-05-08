@@ -40,7 +40,7 @@ In this conifiguration i used
 - VLAN 20 HR Department subnet is 10.20.0.0/24 -> (VPC2)
 - VLAN 30 DEV Department subnet is 10.30.0.0/24 -> (VPC4, VPC5)
 
-```bash
+```cisco
 Switch>en
 Switch# conf terminal
 Switch(config)# hostname SW1 // Configure the name for the switch
@@ -59,7 +59,7 @@ Trunking allows us to carry traffic to All VLAN's (except the Native one which i
 That is done via a term called `Tagging`,
 So If we have VPC1 on SW1 and VPC3 on SW2, the line between the switches needs to be configured so that VPC1 can ONLY talk to hosts in his own VLAN. (In our case VPC3)
 
-```bash
+```cisco
 SW1(config)#interface range gigabitEthernet 0/0-2 // I used mutliple interfaces 
 SW1(config-if-range)# switchport trunk encapsulation dot1q 
 SW1(config-if-range)# switchport mode trunk 
@@ -75,7 +75,7 @@ This means that VPCS in VLAN 10 cannot directly communicate with other VPCS in o
 The idea of Inter VLAN routing solves this issue or using a method called ROAS.
 ROAS allows us to use sub interfaces instead of using each cable for each VLAN.
 
-```bash
+```cisco
 Router> enable
 Router# configure terminal
 Enter configuration commands, one per line.  End with CNTL/Z.
@@ -95,7 +95,7 @@ This technology allows us to use muliple interfaces and act as one, this way if 
 For Either channel to work it is needed to configure LACP protocol
 Both sites need to be either in Active/Active or Active/Passive
 
-```bash
+```cisco
 SW1(config)# interface range gig0/0-2
 SW1(config-if-range)# channel-group 1 mode active
 SW1(config)#do show ip interface brief 
@@ -116,7 +116,7 @@ Other subnets that are not defined will be not cos there is an DENY ALL at the e
 
 #### Here is the configuration for both NAT and ACL
 
-```bash
+```cisco
 R1>en
 R1# conf te
 Enter configuration commands, one per line.  End with CNTL/Z.
