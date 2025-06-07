@@ -19,7 +19,7 @@ The one thing that OSPF stands out other than other Routing protocols is its met
 
 Here is how i configured OSPF : 
 
-![OSPF Config](/static/images/slika-OSPF.png)
+![OSPF Config](/images/slika-OSPF.png)
 
 The madatory configuration that is needed is specifying the process id and networks.
 For the network part you should specify the networks you are directly connected to.
@@ -40,7 +40,7 @@ Quick tip on caluculating the wildcard mask is like this : 255.255.255.255 - 255
 
 Once you do for every router use this command on the image to view adjacent neighbors
 Also this image proves that we can ping the DHCP Server and we can reach that node by sending a ping.
-![OSPF Neighbors](/static/images/OSPF-neighbors.png)
+![OSPF Neighbors](/images/OSPF-neighbors.png)
 
 ## DHCP Configuration
 
@@ -58,7 +58,7 @@ That process is called DORA - Disover Offer Offer Ack.
 For the DHCP Server to assign ip addresses you need a DHCP Pool i created multiple pools for each client VPC
 It is also important to specify the default gateway for the DHCP client and NOT exclude that address.
 
-![DHCP Server](/static/images/slika-DHCP-2.png)
+![DHCP Server](/images/slika-DHCP-2.png)
 
 ```cisco
 enable
@@ -74,7 +74,7 @@ Because i have multiple networks and the DHCP Server is not on same subnet as th
 That role is typically played by the router to forward the DHCP traffic to the Server.
 On the router you need to configure this on the interface where the DHCP client is or where the Client Default gateway is located
 
-![DHCP Relay](/static/images/DHCP-Relay.png)
+![DHCP Relay](/images/DHCP-Relay.png)
 
 ```cisco
 enable
@@ -88,17 +88,17 @@ ip
 On the workstation PC we can try to contact the DHCP server and obtain the Address
 and After executing the command we can see that the request goes through and i get an ip adddress 
 
-![DHCP Client Test](/static/images/DHCP-Client-Work.png)
+![DHCP Client Test](/images/DHCP-Client-Work.png)
 
 But i also tried on a NON configured Router Relay agent and of course it didnt work
 
-![DHCP CLinet Failed](/static/images/DHCP-Client-Fail.png)
+![DHCP CLinet Failed](/images/DHCP-Client-Fail.png)
 
 That fails because these types of messages that DHCP uses only work in LAN network, it uses Unicast and Broadcast, which cant work outside LAN (brodcast) 
 I will now fix the HR device to obtain the address via DHCP from its approprate subnet and ping the 172.31.30.1 VPC
 
-![DHCP Got Address](/static/images/DHCP-GotAddress.png)
-![DHCP Ping works](/static/images/DHCP-PingWorks.png)
+![DHCP Got Address](/images/DHCP-GotAddress.png)
+![DHCP Ping works](/images/DHCP-PingWorks.png)
 
 We can see that the HR device can contact the DEV device and see that it goes over the route via the Switch path this could be changed if we set up some priority but lets no complicate things.
 Unfourtunately I don’t have access to ip dhcp snooping commands over my Vios router cos I think it is required to have a license for that. So you can try using something from the CSR Router series. 
