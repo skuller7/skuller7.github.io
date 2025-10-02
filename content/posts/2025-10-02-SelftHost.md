@@ -37,6 +37,7 @@ Gitea app consist of an: gitea server image + postgresql database
 Here is the compose file, to use default credentials create an .env file where everything will be stored or copy the default from gitea link.
 We are also using an specific version of gitea version 1.24.5, this will pull the image for both gita and postgresql
 
+```yaml
 version: "3.9"
 services:
   server:
@@ -75,6 +76,7 @@ services:
 volumes:
   gitea-data:
   gitea-db:
+```
 
 You can start the docker container by running: docker compose -f ./compose.yml up 
 This will pull the image from docker hub, also will print the logs and give us information on the app.
