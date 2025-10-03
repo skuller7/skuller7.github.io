@@ -78,19 +78,19 @@ volumes:
   gitea-db:
 ```
 
-You can start the docker container by running: docker compose -f ./compose.yml up 
+You can start the docker container by running: ```sh docker compose -f ./compose.yml up ``` 
 This will pull the image from docker hub, also will print the logs and give us information on the app.
 When started, you will see something simmilar to this on your web browser:
 ![rp4](/images/rasberrypiGiteap1.png)
 This is the configuration, enter the following:
-DatabaseSettings: 
-    - Database Type: PostgreSQL
-    - Host: leave deafault
-    - Username: gitea
-    - Password: DB_PASSWORD (you entered/or enter default)
-    - Database Name: gitea
-    - SSL: disable (for now will configure later)
-GeneralSettings: Leave everything deafult.
+>**DatabaseSettings**: 
+    > Database Type: PostgreSQL
+    > Host: leave deafault
+    > Username: gitea
+    > Password: DB_PASSWORD (you entered/or enter default)
+    > Database Name: gitea
+    > SSL: disable (for now will configure later)
+>**GeneralSettings: Leave everything deafult**.
 
 Once done, you will be presented with the main dasboard
 ![rp4](/images/rasberrypiGiteap2.png)
