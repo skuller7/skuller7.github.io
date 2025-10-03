@@ -84,15 +84,49 @@ When started, you will see something simmilar to this on your web browser:
 ![rp4](/images/rasberrypiGiteap1.png)
 This is the configuration, enter the following:
 >**DatabaseSettings**: 
-    > Database Type: PostgreSQL
-    > Host: leave deafault
-    > Username: gitea
-    > Password: DB_PASSWORD (you entered/or enter default)
-    > Database Name: gitea
-    > SSL: disable (for now will configure later)
+    - Database Type: PostgreSQL
+    - Host: leave deafault
+    - Username: gitea
+    - Password: DB_PASSWORD (you entered/or enter default)
+    - Database Name: gitea
+    - SSL: disable (for now will configure later)
 >**GeneralSettings: Leave everything deafult**.
 
 Once done, you will be presented with the main dasboard
 ![rp4](/images/rasberrypiGiteap2.png)
 
 ####  Gitea repository migration from Github
+
+You can migrate your apps repository from github, to gitlab
+Not just github there a veriety of platforms you can move from: Codebase, OneDev, AWSCodecommit
+To migrate the repository we need some sort of authentication on the github side, using the PAM Tokens
+To create an Fine-grained token following this link: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+
+1. Click on the New migration button and select Github
+2. Migrate/Clone From Url
+Set the url link of repository to clone to gitea
+3. Access Token - PAM
+Paste the token you created 
+4. Everything else leave as default like on the picture below
+![rp4](/images/rasberrypiGiteap3.png)
+
+Your repsitory should be on gitea after the process finishes.
+Now lets try to clone the repository to our machine
+
+1. Clone the repository on the Machine
+```sh
+git clone http://192.168.1.56:3000/admin/subnetCalculator.git
+```
+2. Create some files using the touch command, stage them and commit using git
+```sh
+touch file01 file02
+git add . 
+git commit -m "Added new files"
+git push origin main
+```
+
+3. Authenticate over the web, and see changes on the Platform.
+![rp4](/images/rasberrypiGiteap4.png)
+
+### Stage 2 - Configuring Reverse Proxy on Azure
+
