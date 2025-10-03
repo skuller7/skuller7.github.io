@@ -130,3 +130,59 @@ git push origin main
 
 ### Stage 2 - Configuring Reverse Proxy on Azure
 
+The plan for this project was to have an proxy server acting as a middleman, for all of our requests
+This was possible thanks to Traefik, and it was not very simple setting it up, 
+The app is deployed on Azure VM, & you need to make sure to open the right ports using NSG.
+
+```yaml
+Here is how the compose file looks like
+services:
+  traefik:
+    image: traefik:v3.5
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--log.level=INFO"
+      - "--accesslog=true"
+
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      # Traefik Dashboard with Basic Auth
+      - "traefik.http.routers.api.rule=Host(`traefik.lilixkube.net`)"
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.routers.api.middlewares=auth"
+      # Basic Auth: admin/password (change this)
+      - "traefik.http.middlewares.auth.basicauth.users=<CREDENTIALS>"
+
+  # Test service
+  whoami:
+    image: "traefik/whoami"
+    labels:
+      - "traefik.http.routers.whoami.rule=Host(`whoami.lilixkube.net`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+
+  # Gitea proxy service
+  gitea-proxy:
+    image: "traefik/whoami"  # Just for testing, can remove later
+    labels:
+      - "traefik.http.routers.gitea.rule=Host(`gitea.lilixkube.net`)"
+      - "traefik.http.routers.gitea.entrypoints=web"
+      - "traefik.http.routers.gitea.service=gitea-backend"
+      - "traefik.http.services.gitea-backend.loadbalancer.server.url=http://172.16.25.2:3000"
+      # Optional: Add auth to Gitea too
+      # - "traefik.http.routers.gitea.middlewares=auth"
+```
+Here is how the NSG supposose to look like, you need to open the ports: 3000 (gitea), 80/443 (HTTP/S), 51820 (Traefik)
+![rp4](/images/rasberrypiGiteap5.png)
+
+Some things are confising here, like the use of domain name using private address'es and SSL certificate part but this will be all configured latter, in its own stage section.
+
+
