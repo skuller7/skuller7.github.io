@@ -214,14 +214,14 @@ The utility is ran by using:
 
 A full video on how to configure Wireguard VPN: https://www.youtube.com/watch?v=hXBvO1Yj9iQ
 
-Server configuration - Azure VM config :
+Server configuration - Azure VM config:
 
 - Main configuration file 
 ```bash
 root@GitLabServer:/etc/wireguard# cat wg0.conf
 [Interface]
 Address = 172.16.25.1/24
-PrivateKey = <PRIVATEKEY>
+PrivateKey = <VM PRIVATE KEY>
 ListenPort = 51820
 PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
@@ -234,8 +234,34 @@ PreDown = iptables -D FORWARD -i %i -j ACCEPT
 PreDown = iptables -D FORWARD -o %i -j ACCEPT
 
 [Peer]
-PublicKey = TpdH8P9WaiItZH2IvyE429PyWhQ3B8DINB6l84xISW0=
+PublicKey = TpdH8P9WaiItZH2IvyE429PyWhQ3B8DINB6l84xISW0= # (Rasberry public key)
 AllowedIPs = 172.16.0.0/16
 ```
+![azureVM](/images/selfhostingAzurep1.png)
+**Important tip: Make sure that the Azure Vnet and Wireguard VPN networks dont overlap, use different subnets**
 
-Client Configuration -  
+Client Configuration - Rasberry pi 4:
+
+- Main configuration file
+```bash
+root@raspberrypi:/home/uros# cat /etc/wireguard/wg0.conf
+[Interface]
+PrivateKey = <RASBERRY PRIVATE KEY>
+Address = 172.16.25.2
+
+[Peer]
+PublicKey = +MXmpGfno45XkajA60hlyuGHlv0Iz48KVnNv1cxugHA= # (VM PUBLIC KEY)
+Endpoint = <PUBLIC_IP>:51820 # ( Public IP of Azure VM - Opened port on - NSG
+AllowedIPs = 0.0.0.0/0  # Allow access to entire VPN subnet - not recommnded
+PersistentKeepalive = 25
+root@raspberrypi:/home/uros#
+```
+
+Start sevice on both VM & RP4
+```sh
+sudo systemctl status wg-quick@wg0
+sudo systemctl start wg-quick@wg0
+```
+
+Try to ping the both ends to see if they communite, if properly configure they should
+![azureVM](/images/selfhostingAzurep2.png)
