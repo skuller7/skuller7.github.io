@@ -195,3 +195,47 @@ Here is how the NSG supposose to look like, you need to open the ports: 3000 (gi
 To only way to access traefik is via domain name or via public ip addresses
 There will be documentation later on how to set up Domain names and DNS in general.
 
+### Stage 3 - Setting up Wireguard VPN 
+
+To configure traefik to handle all of our requests we needed to expose our rp4 service on the internet.
+This way gitea will be accessible over the public ip address of VM 
+And we will have direct communication with the Azure Virtual Network.
+
+So here we will configure Site To Site FULL tunnel using Wireguard utility on both parties.
+The link to Wireguard is here: https://www.wireguard.com
+Installation here: https://www.wireguard.com/install
+
+The utility is ran by using: 
+- Main config file ( /etc/wiredguard/wg0.conf )
+- Public key ( accessible by everyone )
+- Private key ( kept on user side )
+- Azure VM ( Server IP address - Private ip address )
+- Rp4 ( Client IP address - Private ip address )
+
+A full video on how to configure Wireguard VPN: https://www.youtube.com/watch?v=hXBvO1Yj9iQ
+
+Server configuration - Azure VM config :
+
+- Main configuration file 
+```bash
+root@GitLabServer:/etc/wireguard# cat wg0.conf
+[Interface]
+Address = 172.16.25.1/24
+PrivateKey = <PRIVATEKEY>
+ListenPort = 51820
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+PostUp = iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE
+PostUp = iptables -A FORWARD -i %i -j ACCEPT
+PostUp = iptables -A FORWARD -o %i -j ACCEPT
+PreDown = iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+PreDown = iptables -D FORWARD -i %i -j ACCEPT
+PreDown = iptables -D FORWARD -o %i -j ACCEPT
+
+[Peer]
+PublicKey = TpdH8P9WaiItZH2IvyE429PyWhQ3B8DINB6l84xISW0=
+AllowedIPs = 172.16.0.0/16
+```
+
+Client Configuration -  
