@@ -193,7 +193,6 @@ Here is how the NSG supposose to look like, you need to open the ports: 3000 (gi
 ![rp4](/images/rasberrypiGiteap5.png)
 
 To only way to access traefik is via domain name or via public ip addresses
-There will be documentation later on how to set up Domain names and DNS in general.
 
 ### Stage 3 - Setting up Wireguard VPN 
 
@@ -257,11 +256,33 @@ PersistentKeepalive = 25
 root@raspberrypi:/home/uros#
 ```
 
-Start sevice on both VM & RP4
+Start service on both VM & RP4
 ```sh
 sudo systemctl status wg-quick@wg0
 sudo systemctl start wg-quick@wg0
 ```
 
-Try to ping the both ends to see if they communite, if properly configure they should
+Try to ping both ends to see if they communicate, if properly configure they should.
 ![azureVM](/images/selfhostingAzurep2.png)
+
+### Stage 4 - Managing DNS via Cloudflare
+
+Once we deployed all the services needed exposed it over the internet, we want to use domain names and set up Certificates
+We will need an domain name, originally i was using AWS Route 53 
+Latter i migrated everything to Cloudflare to have everything centralized.
+
+So in our case we need 2 A records for traefik and gitea,  
+![cloudflare](/images/selfhostingAzurep3.png)
+
+Also to check if your A records or NS records are registered use the DNS Checker utility
+the webiste is https://dnschecker.org
+![cloudflare](/images/selfhostingAzurep4.png)
+
+**Run the dig utility to extract DNS infromation from an domain name and whois <IP> , in my case i get information on cloudflare**
+
+You can also set up SSL/TLS certificates very easly
+Clouflare uses Google Trust Certificates to issue new ones, so it should look something like this
+![cloudflare](/images/selfhostingAzurep5.png) 
+
+Be sure to add the needed labels & config on the traefik compose file for that.
+
