@@ -4,7 +4,7 @@
 When starting the internship, one of the things I learned was Self hosting.
 The process reffers to Deploying an service locally on your Network and taking full responsibility for your application
 I got started with a Rasberry pi 4, an mini Computer with an Debian installed onto it.
-On the project i reied on Documentation, Other peoples blogs and very on AI Models like Claude 4.5 Sonnet.
+On the project i relied on Documentation, Other peoples blogs and very on AI Models like chatgpt, Gemini & Claude 4.5 Sonnet.
 Finnaly not everything will be documented here, cos there is a lot of detail.
 
 ## Lab Overview 
@@ -180,9 +180,18 @@ services:
       # Optional: Add auth to Gitea too
       # - "traefik.http.routers.gitea.middlewares=auth"
 ```
+One of the most important security mechanisms here is using authentication for traefik.
+Run this command on your server, that will generate the password where we will access the traefik
+```sh
+zUros@GitLabServer:~$ echo $(htpasswd -nb uros sysadmin) | sed -e s/\\$/\\$\\$/g
+uros:$$apr1$$a5hbpjaA$$ShMqSFK9cdBdc0oX5vR0u0
+zUros@GitLabServer:~$
+```
+Paste the credentials in traefik labels, every time you need to access the service you will need to authenticate.\
+
 Here is how the NSG supposose to look like, you need to open the ports: 3000 (gitea), 80/443 (HTTP/S), 51820 (Traefik)
 ![rp4](/images/rasberrypiGiteap5.png)
 
-Some things are confising here, like the use of domain name using private address'es and SSL certificate part but this will be all configured latter, in its own stage section.
-
+To only way to access traefik is via domain name or via public ip addresses
+There will be documentation later on how to set up Domain names and DNS in general.
 
