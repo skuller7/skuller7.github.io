@@ -1,5 +1,5 @@
 ## Active Directiry Lab In Azure
-![cloud] (/images/azureHube-Spokev1.png)
+![cloud](/images/azureHube-Spokev1.png)
 
 This was an mini project i did in Azure where i did the following.
 I set up an Network in the Cloud using an architecture Hub and Spoke.
