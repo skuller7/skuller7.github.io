@@ -29,6 +29,6 @@ You can look at the hardware requirements for the Windows Server : https://learn
 For the disk, one OS disk for ISO, and later added more data disks.
 And finally the networking, i created it 
 ![VM-p1](/images/2026-azure-VMp1.png)
-![VM-p2](images/2026-azure-VMp2.png)
-![VM-p3](images/2026-azure-VMp3.png)
-![VM-p4](images/2026-azure-VMp4.png)
+![VM-p2](/images/2026-azure-VMp2.png)
+![VM-p3](/images/2026-azure-VMp3.png)
+![VM-p4](/images/2026-azure-VMp4.png)
