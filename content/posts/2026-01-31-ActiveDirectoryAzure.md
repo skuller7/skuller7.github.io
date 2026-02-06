@@ -54,8 +54,8 @@ Select Active Directory Domain Services only, and leave everything on by default
 Lets start the configuration of Active Directory
 here we will create a new forest for our Domain, be sure to select DNS server also.
 I used lilixkube as my domain, you can create your own. 
-![VM-p11](/images/2026-azure-VM11.png)
-![VM-p12](/images/2026-azure-VM12.png)
+![VM-p11](/images/2026-azure-VMp11.png)
+![VM-p12](/images/2026-azure-VMp12.png)
 
 Now that we set up the Active Directory VM, lets focus on the client workstations.
 If you didnt create networking on the azure do it so by going to vnet this is an example for Spoke A 
@@ -68,3 +68,62 @@ After you set up all spoke virtual networks, you can see them here
 Now it is necessary to establish vnet-peering, it is an integrated mechanism within vNet that allows us to connect several virtual networks and ensure connectivity within the subnet.
 In Hub and spoke architecture, We connect all tree spoke networks with a Hub network.
 Also, later we will change the option for the Gateway it applies to the VPN, which we will configure later.
+Be sure to repeat the same steps for Hub to Spoke networks and vice versa
+![VM-p16](/images/2026-azure-VMp16.png)
+![VM-p17](/images/2026-azure-VMp17.png)
+![VM-p18](/images/2026-azure-VMp18.png)
+
+#### VPN PointToSite Configuration
+Now that we created networks and configured peering.
+We need to set up a mechanism where we can connect to our azure internal network.
+One of the ways is through VPN, using P2S model.
+This is possbile with Azure VPN gateway 
+
+1. First thing that we need is create an extra subnet for VPN gateway
+This is actually needed when we connect to the VPN, the OS creates an interface for VPN with that address pool of 10.10.0.0/24 
+![VM-p19](/images/2026-azure-VMp19.png)
+![VM-p20](/images/2026-azure-VMp20.png)
+
+2. Create & set up VPN gateway
+Set the VPN to attach to Hub network
+Be sure to watch for the VPN sku i used no availability gen 1, check pricing here: https://azure.microsoft.com/en-us/pricing/details/vpn-gateway
+Deployment can take up to 30 mins.
+![VM-p21](/images/2026-azure-VMp21.png)
+![VM-p22](/images/2026-azure-VMp22.png)
+
+3. Setting up Root Certificates
+Here is the link for the command to create an certificate : https://learn.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-certificates-point-to-site
+For windows based systems open Powershell as Admin and paste this in
+```sh
+$params = @{
+    Type = 'Custom'
+    Subject = 'CN=P2SRootCert'
+    KeySpec = 'Signature'
+    KeyExportPolicy = 'Exportable'
+    KeyUsage = 'CertSign'
+    KeyUsageProperty = 'Sign'
+    KeyLength = 2048
+    HashAlgorithm = 'sha256'
+    NotAfter = (Get-Date).AddMonths(24)
+    CertStoreLocation = 'Cert:\CurrentUser\My'
+}
+$cert = New-SelfSignedCertificate @params
+```
+You can find the created certificate through Certificate Manager program On Windows
+Click on Certificates and check if your name is there in my case P2SRootCert
+When you find it, right click => All tasks => Export => Do not export Privatekey => Option base64 => Save it in a file on your FS.
+![VM-p23](/images/2026-azure-VMp23.png)
+
+4. Copy Certificate to Azure & Download .vpn file
+Lets copy our Certificate that we just saved and in Azure go to Hub-VPN-gateway Point to Site Configuration
+![VM-p24](/images/2026-azure-VMp24.png)
+When you do so, download the zip file, extract it find the file VPNsetting.xml
+![VM-p25](/images/2026-azure-VMp25.png)
+
+5. Connecting to the VPN
+Open the VPN setting on Windows, Add VPN
+Copy from the VPNsettings.xml file VPNserver name id, paste it as a Server Name
+For the type set it as Certificate and protocol IKEv2
+Once done so you can Connect to the VPN.
+![VM-p26](/images/2026-azure-VMp26.png)
+
