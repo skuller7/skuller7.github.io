@@ -127,3 +127,44 @@ For the type set it as Certificate and protocol IKEv2
 Once done so you can Connect to the VPN.
 ![VM-p26](/images/2026-azure-VMp26.png)
 
+#### Setting up Windows Client 
+Now that we have VPN connection, lets set up an VM Client and test connectivity
+In azure quickly deploy this VM, just set the network to one of the Spoke, set the public IP to none
+![VM-p27](/images/2026-azure-VMp27.png)  
+Now lets first connect to the Windows Server from HUB net and try to test connectivity to the newly created Mary Client Machine.
+I used the default remote desktop connection, you can use any software you want.
+If you notice we can see We entered the private IP address of the Windows Server VM, and its username. We get an active directory domain name pop up, so that is great news.   
+![VM-p28](/images/2026-azure-VMp28.png)
+Now from our WIN server machine lets test connectivity to Mary client VM and connect to the VM.
+![VM-p29](/images/2026-azure-VMp29.png)
+![VM-p30](/images/2026-azure-VMp30.png)
+That is basically the procedure on how we connect to the Client
+
+#### Connecting the User to the Domain
+Right now the problem is that that client is not part of the domain name.
+Lets connect to the domain for a different User, in my case Uros from IT here is how we can do that.
+There are multiple things we need to set up
+First thing from client side join the domain (THIS WONT SOLVE OUR PROBLEM)
+![VM-p37](/images/2026-azure-VMp37.png)
+You can see that by actually trying to connecto that client after applying the above changes
+![VM-p38](/images/2026-azure-VMp38.png)
+Here is how to FIX This Issue 
+1. On windows server, go to Active directory Users and Computers => create an User
+![VM-p31](/images/2026-azure-VMp31.png)
+2. Set up An OU 
+Go to Users and Computers => New OU => Move the User (Uros) to the New OU
+Right click on the Uros and click on Move to 
+3. Group Policy Management  
+Open and create a new GPO directly on that OU
+![VM-p32](/images/2026-azure-VMp32.png)
+4. Set up GPO
+Now lets configure the policy, by clicking on the edit
+Computer Configuration --> Policies --> Administrative Templates --> Windows Components --> Remote Desktop Services --> Remote Desktop Session Host --> Connections
+Computer Configuration --> Windows Settings --> Security Settings --> Local Policies --> User Rights Assignment
+![VM-p33](/images/2026-azure-VMp33.png)
+![VM-p34](/images/2026-azure-VMp34.png)
+5. Connecting to the Domain Client
+To connect to the client we need to use this format : DOMAIN_NAME\CLIENT
+In addition to that i implemented an policy that deny access to some programs
+![VM-p35](/images/2026-azure-VMp35.png)
+![VM-P36](/images/2026-azure-VMp36.png)
